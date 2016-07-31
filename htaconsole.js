@@ -144,7 +144,7 @@
             for (var x = 0; x < cmdHistory.length; x++) console.log(cmdHistory[x])
             this.value = ''
           } else if (sCmd) {
-            htaConsole.log('<span style="color:#777"; font-weight:700;>&#62;</span> <span>' + sCmd + '</span>')
+            htaConsole.log('<span style="color:#777"; font-weight:700">&#62;</span> <span>' + sCmd + '</span>')
             cmdHistory.push(sCmd)
             try {
               var evalCmd = eval(sCmd)
@@ -202,28 +202,20 @@
       // define undefined methods as noops to prevent errors
       for (var i = 0; i < method.length; i++) {
         if (!window.console[method[i]]) {
-          console[method[i]] = function() {
-            var sArguments = ""
-            for (var i = 0, j = arguments.length; i < j; i++) {
-              sArguments += arguments[i] + " "
-            }
-            if (method[i] === "onerror") {
-              var scriptName
-              var scriptNameURL = arguments[1]
-              if (scriptNameURL.match('/') || scriptNameURL.match('\\')) {
-                var ExplodescriptName = scriptNameURL.split('/') || scriptNameURL.split('\\')
-                scriptName = ExplodescriptName[ExplodescriptName.length - 1]
-              } else {
-                scriptName = arguments[1]
-              }
+          if (method[i] === 'onerror') {
+            console[method[i]] = function() {
+              var scriptURL = arguments[1]
+              var scriptName = scriptURL.split('/')[scriptURL.split('/').length - 1]
               htaConsole.log(
                 '<span style="color:red">&otimes;' +
                 '  <span>' + arguments[0] + '</span>' +
-                '  <span class="pull-right" style="cursor:pointer; color:blue" onclick="htaConsole.showModal(\''+ scriptNameURL +'\')">' + scriptName + ":" + arguments[2] + '</span>' +
+                '  <span class="pull-right" style="cursor:pointer; color:blue" onclick="htaConsole.showModal(\''+ scriptURL +'\')">' + scriptName + ":" + arguments[2] + '</span>' +
                 '</span>'
               )
+              return true
             }
-            return true
+          } else {
+            console[method[i]] = function() { return true }
           }
         }
       }
@@ -233,16 +225,16 @@
           htaConsole.clear()
         },
         cmd: function(arg) {
-          htaConsole.log('&#9654;<span>' + arg + "</span>")
+          htaConsole.log('<span style="color:#777"; font-weight:700">&#62;</span> <span>' + arg + "</span>")
         },
         info: function(arg) {
-          htaConsole.log('&#9432;<span>' + arg + "</span>")
+          htaConsole.log('<span style="color: RoyalBlue">&#9432;</span> <span>' + arg + "</span>")
         },
         log: function(arg) {
           htaConsole.log('<span style="padding-left: 2px;">' + arg + '</span>')
         },
         warn: function(arg) {
-          htaConsole.log('<span style="color: orange;">&#9888;</span> <span>' + arg + '</span>')
+          htaConsole.log('<span style="color: orange">&#9888;</span> <span>' + arg + '</span>')
         },
         error: function(arg) {
           throw arg
